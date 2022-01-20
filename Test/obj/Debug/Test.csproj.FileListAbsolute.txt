@@ -1,0 +1,11 @@
+E:\fyp_test\startup_vpn_removal_and_ping_exe\Test\Test\obj\Debug\Test.csproj.AssemblyReference.cache
+E:\fyp_test\startup_vpn_removal_and_ping_exe\Test\Test\obj\Debug\Test.csproj.SuggestedBindingRedirects.cache
+E:\fyp_test\startup_vpn_removal_and_ping_exe\Test\Test\obj\Debug\Test.csproj.CoreCompileInputs.cache
+E:\fyp_test\startup_vpn_removal_and_ping_exe\Test\Test\bin\Debug\System.CodeDom.dll
+E:\fyp_test\startup_vpn_removal_and_ping_exe\Test\Test\bin\Debug\System.CodeDom.xml
+E:\fyp_test\startup_vpn_removal_and_ping_exe\Test\Test\obj\Debug\Test.csproj.CopyComplete
+E:\fyp_test\startup_vpn_removal_and_ping_exe\Test\Test\bin\Debug\Vpn_removal_and_selfdestructing_exe.exe.config
+E:\fyp_test\startup_vpn_removal_and_ping_exe\Test\Test\bin\Debug\Vpn_removal_and_selfdestructing_exe.exe
+E:\fyp_test\startup_vpn_removal_and_ping_exe\Test\Test\bin\Debug\Vpn_removal_and_selfdestructing_exe.pdb
+E:\fyp_test\startup_vpn_removal_and_ping_exe\Test\Test\obj\Debug\Vpn_removal_and_selfdestructing_exe.exe
+E:\fyp_test\startup_vpn_removal_and_ping_exe\Test\Test\obj\Debug\Vpn_removal_and_selfdestructing_exe.pdb
